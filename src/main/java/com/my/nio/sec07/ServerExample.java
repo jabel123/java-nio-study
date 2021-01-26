@@ -54,7 +54,7 @@ public class ServerExample extends Application
                         {
                             accept(selectionKey);
                         }
-                        else if( selectionKey.isReadable())
+                        else if(selectionKey.isReadable())
                         {
                             Client client = (Client) selectionKey.attachment();
                             client.receive(selectionKey);
