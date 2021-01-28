@@ -10,7 +10,5 @@ public class MyClient {
         socketChannel.connect(new InetSocketAddress("localhost", 5001));
 
         socketChannel.close();
-
-
     }
 }
