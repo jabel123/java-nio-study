@@ -14,8 +14,8 @@ public class HtClient {
         System.out.println("보내기 요청");
 
 
-        Charset charset = Charset.defaultCharset();
-        ByteBuffer byteBuffer = charset.encode("씨발련아");
+        Charset charset = Charset.forName("UTF-8");
+        ByteBuffer byteBuffer = charset.encode("메시지 전달되라고!!! 망할놈아!!");
         channel.write(byteBuffer);
 
         System.out.println("채널 닫을래");

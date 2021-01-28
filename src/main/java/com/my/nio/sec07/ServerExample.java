@@ -1,8 +1,5 @@
 package com.my.nio.sec07;
 
-import javafx.application.Application;
-import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -16,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-public class ServerExample extends Application
+public class ServerExample
 {
     Selector selector;
     ServerSocketChannel serverSocketChannel;
@@ -198,11 +195,5 @@ public class ServerExample extends Application
                 }
             }
         }
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception
-    {
-
     }
 }

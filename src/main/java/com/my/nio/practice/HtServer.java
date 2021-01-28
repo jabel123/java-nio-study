@@ -3,12 +3,12 @@ package com.my.nio.practice;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.*;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 public class HtServer
 {
@@ -18,11 +18,15 @@ public class HtServer
 
     class Client
     {
+        String uid;
         SocketChannel socketChannel;
 
         public Client(SocketChannel channel) {
             try {
                 System.out.println("[접속 : " + channel.getRemoteAddress() + " ]");
+                this.uid = UUID.randomUUID().toString();
+                socketChannel = channel;
+                System.out.println("uid : " + uid);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -39,12 +43,23 @@ public class HtServer
 
         public void readMessage() {
             ByteBuffer byteBuffer = ByteBuffer.allocate(1000);
-            Charset charset = Charset.defaultCharset();
             try {
-                socketChannel.read(byteBuffer);
+                int byteCount = socketChannel.read(byteBuffer);
+                if (byteCount == -1) throw new IOException();
+
+                System.out.println("byteCount :  " + byteCount);
                 byteBuffer.flip();
+                Charset charset = Charset.forName("UTF-8");
                 String msg = charset.decode(byteBuffer).toString();
                 System.out.println(msg);
+
+                for (Client tmpClient : clientList)
+                {
+                    SelectionKey selectionKey = tmpClient.socketChannel.keyFor(selector);
+                    selectionKey.interestOps(SelectionKey.OP_WRITE);
+                }
+
+                selector.wakeup();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -77,11 +92,11 @@ public class HtServer
                         ServerSocketChannel serverChannel = (ServerSocketChannel) selectionKey.channel();
                         SocketChannel channel = serverChannel.accept();
                         channel.configureBlocking(false);
-                        channel.register(selector, SelectionKey.OP_READ);
+                        SelectionKey chSelectionKey = channel.register(selector, SelectionKey.OP_READ);
 
                         Client client = new Client(channel);
                         clientList.add(client);
-                        selectionKey.attach(client);
+                        chSelectionKey.attach(client);
                     }
                     else if (selectionKey.isReadable())
                     {
